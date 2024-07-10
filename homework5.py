@@ -6,7 +6,7 @@
 # - Выведите на экран измененный список mutable_list.
 immutable_var = ('1', 2, True)
 print(immutable_var)
-immutable_var[0] = '2'
+immutable_var[0] = '2' # Элементы в кортеже изменить нельзя, т.к не он не поддерживает обращение по элементам
 mutable_list = [1, 2, True]
 mutable_list[2] = False
 print(mutable_list)
