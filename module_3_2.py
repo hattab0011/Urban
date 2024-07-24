@@ -10,5 +10,3 @@ def send_email(mail, recipient, *, sender = 'university.help@gmail.com'):
         print(f"Письмо успешно отправлено с адреса {sender} на адрес {recipient}")
     else:
         print(f"НЕСТАНДАРТНЫЙ ОТПРАВИТЕЛЬ! Письмо отправлено с адреса {sender} на адрес {recipient}")
-
-
