@@ -7,4 +7,4 @@ def single_root_words(root_world, *other_worlds):
     return (same_words)
 
 result = single_root_words('rich', 'richiest', 'orichalcum', 'cheers', 'richies')
-print(result)з
+print(result)
