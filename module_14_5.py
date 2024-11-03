@@ -1,9 +1,22 @@
-from aiogram import Bot, Dispatcher, executor
+from aiogram import Bot, Dispatcher, executor, types
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
+from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters.state import State, StatesGroup
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from crud_functions import *
+
+class UserState(StatesGroup):
+    username = State()
+    email = State()
+    age = State()
+
+class RegistrationState(StatesGroup):
+    username = State()
+    email = State()
+    age = State()
+
+initiate_db()
 
 api = '7299386467:AAGDH-7EOpa0AINm83yLaUEvY3O6expwK40'
 bot = Bot(token = api)
@@ -28,12 +41,44 @@ kb_buy3 = InlineKeyboardButton('Product3', callback_data='product_buying')
 kb_buy4 = InlineKeyboardButton('Product4', callback_data='product_buying')
 in_kb_buy.add(kb_buy1, kb_buy2, kb_buy3, kb_buy4)
 
+@dp.message_handler(text='Регистрация')
+async def sing_up(message: types.Message):
+    await message.answer("Введите имя пользователя (только латинский алфавит):")
+    await RegistrationState.username.set()
 
-class UserState(StatesGroup):
-    age = State()
-    growth = State()
-    weight = State()
+@dp.message_handler(state=RegistrationState.username)
+async def set_username(message: types.Message, state: FSMContext):
+    username = message.text
+    if not username.isalpha():
+        await message.answer("Имя пользователя должно содержать только латинские буквы. Попробуйте снова:")
+        return
 
+    if is_included(username):
+        await message.answer("Пользователь существует, введите другое имя")
+        return
+
+    await state.update_data(username=username)
+    await message.answer("Введите свой email:")
+    await RegistrationState.email.set()
+
+@dp.message_handler(state=RegistrationState.email)
+async def set_email(message: types.Message, state: FSMContext):
+    email = message.text
+    await state.update_data(email=email)
+    await message.answer("Введите свой возраст:")
+    await RegistrationState.age.set()
+
+@dp.message_handler(state=RegistrationState.age)
+async def set_age(message: types.Message, state: FSMContext):
+    age = int(message.text)
+    user_data = await state.get_data()
+    username = user_data.get('username')
+    email = user_data.get('email')
+
+    add_user(username, email, age)
+
+    await message.answer("Регистрация завершена! Добро пожаловать!")
+    await state.finish()
 
 @dp.message_handler(text = 'Рассчитать')
 async def main_menu(message):
