@@ -58,6 +58,16 @@ def get_all_products():
     connection.close()
     return products
 
+def is_included(username):
+    connection = sqlite3.connect("products.db")
+    cursor = connection.cursor()
+
+    cursor.execute('SELECT * FROM Users WHERE username = ?', (username,))
+    user = cursor.fetchone()
+
+    connection.close()
+    return user is not None
+
 if __name__ == "__main__":
     initiate_db()
     add_product("Продукт 1", "Описание продукта 1", 100)
